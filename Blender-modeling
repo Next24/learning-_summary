@@ -3,4 +3,7 @@ shortcuts and summary path to achieve a targeted object
 *******
 
 X: delete & dissolve (object, faces, edges, vertex)
-G: move objects (or transform parts)
+G: move objects (or transform parts) (position and rotation in object mode to not change the anchor point)
+R: rotate
+S: scale (change in edit mode to not change the object scale of 1)
+E: extrude 
