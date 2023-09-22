@@ -11,3 +11,4 @@ Shift+D: duplicate
 k: Knife 
 M: move to collection
 I: insert (faces)
+find the wrong faces: small arrow for viewport overlay > face orientation (red = wrong / blue = right) > go to edit mode > select faces > Alt + N (to flip the face)
