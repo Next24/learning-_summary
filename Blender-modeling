@@ -2,15 +2,22 @@ shortcuts and summary path to achieve a targeted object
 
 *******
 
+F3: Search.
+T: Tools Menu.
 X: delete & dissolve (object, faces, edges, vertex).
 G: move objects (or transform parts) (position and rotation in object mode to not change the anchor point).
 R: rotate.
 S: scale (change in edit mode to not change the object scale of 1).
 E: extrude.
-Shift+D: duplicate.
-k: Knife.
+Shift + D: duplicate.
+k: Knife / Bisect (edit mode). for Bisect check the Clear Outer and Fill from the bottom left corner Bisect menu.
 M: move to collection.
 I: insert (faces).
 to find the wrong faces: small arrow for viewport overlay > face orientation (red=wrong, blue=correct) > go to edit mode > select faces > Alt + N (to flip the face).
 P: separate selected to a new object.
 to change the pivot point (even when the mirror modifier is on): go to vertex selection mode (1 key) > select front and back desired vertexes > Shift + S > cursor to selected > object mode > Tab on selected object > set origin > set origin to 3D cursor.
+to extrude inside multiple faces at the same time:  Press I to create an inset and LEFT CLICK immediately without moving your cursor. bottom left inset faces menu > Press I to create an inset and LEFT CLICK immediately without moving your cursor > Change the Transform Pivot Point to Individual Origins> Press E and LEFT CLICK immediately to play with extrude parameters using the menu bottom left corner > Set the Orientation to Normal and play with the Z value > done > set the Transform Pivot Point back to Bounding Box Center. If you want separate faces in edit mode select P.
+ALT + D: Linked Duplicate.
+F12: Render.
+Shift + R: Repeat Last.
+Ctrl + L: apply from the active object to all selected for example materials.
