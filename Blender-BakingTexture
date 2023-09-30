@@ -1,10 +1,16 @@
 After creating a scene:
-change the renderer to Cycles and one of the previews to render view by pressing Z and selecting Rendered.
-to create lighting objects select the Emission Material, change the Color, and set the Strength. remove other lights and add an Area Light to have light control.
+change the renderer to Cycles and one of the previews to render view by pressing Z and 
+  selecting Rendered.
+to create lighting objects select the Emission Material, change the Color, and set the Strength. 
+  remove other lights and add an Area Light to have light control.
 
 
 1- Optimization: Removing hidden faces
 2- position check for Z-fighting 
 3- Fixing faces orientation
-4- Normalize scales: in object mode select all objects with A, press Ctrl+A to open the Aooly menu and choose Scale. You can't see a difference, but all of the object scales have been applied to their geometries instead. This way, all our objects now have a scale of 1.
-5- create or open the UV Editor area, select the object, and go to Edit Mode to see the UV unwrapped of the object.
+4- Normalize scales: in object mode select all objects with A > press Ctrl+A to open the Apply menu 
+  and choose Scale. You can't see a difference, but all of the object scales have been applied to their 
+  geometries instead. This way, all our objects now have a scale of 1.
+5- create or open the UV Editor area > select the object > go to Edit Mode > A or Ctrl + L to select island
+  Press U > Unwarp > go to Edge select > select the cutting edges > U > Mark Seam > Ctrl + L > U > Unwarp 
+  you can set the Margin for object parts with the Unwrap menu (bottom left corner)
