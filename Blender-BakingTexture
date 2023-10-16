@@ -14,3 +14,11 @@ to create lighting objects select the Emission Material, change the Color, and s
 5- create or open the UV Editor area > select the object > go to Edit Mode > A or Ctrl + L to select island
   Press U > Unwarp > go to Edge select > select the cutting edges > U > Mark Seam > Ctrl + L > U > Unwarp 
   you can set the Margin for object parts with the Unwrap menu (bottom left corner)
+6- for small scenes with few small objects you can put all of the UVs on the same plane and bake them all together. 
+  for this purpose, you need to arrange the UVd and make enough margin space, then open the "show overlay" by 
+  clicking on the top right icon (to circles), and then the side arrow to show more options. In the menu that 
+  should open, check Display Stretch and change it to Area. now change the scale of UVs (each object separately) to get
+  close colors and put them all in the UV square area.
+7- Once you're happy with the result, you can deactivate the Display Stretch. now we can start to bake it:
+   a) creating the texture: Leave the Edit Mode. On the top of the area, click on + New button > on New Image menu parameters>
+      set name, W & H maximum 4096, for color Use a white tint, don't need alpha, Generated Type Use Blank, 
