@@ -21,4 +21,14 @@ to create lighting objects select the Emission Material, change the Color, and s
   close colors and put them all in the UV square area.
 7- Once you're happy with the result, you can deactivate the Display Stretch. now we can start to bake it:
    a) creating the texture: Leave the Edit Mode. On the top of the area, click on + New button > on New Image menu parameters>
-      set name, W & H maximum 4096, for color Use a white tint, don't need alpha, Generated Type Use Blank, 
+      set name, W & H maximum 4096, for color Use a white tint, don't need alpha, Generated Type Use Blank, Tiled Unchecked.
+      We don't need the texture to repeat itself. Be aware, that you can show any texture as the background of the UV Editor.
+      The goal here is to help you see both the UV Mapping and the texture at the same time.
+   b) Saving the texture: On the top of the UV Editor area go into Image > Save As (Shift+Alt+S), for File Format Choose 
+      Radiance HDR, save in the same folder as your .blend file.
+   c) Preparing the materials: select one object that you want to relate to the created texture file, change one of the viewports 
+      to the "Shader Editor", If you can't see two nodes make sure "Use Nodes" on the top part of the area is checked, press 
+      SHIFT + A while hovering Shader Editor area, navigate to Texture > Image Texture, Click on the drop-down image icon 
+      and choose our baked texture, in the Properties area go to "Render Properties" tab then in the "Bake section", for Bake Type
+      select "Combined", for margin if the result wasn't over lapping stay at 16, uncheck "Clear Image" if you bake step by step,
+      Before bake, choose a Sampling quality 256 because we will fix the visual noise later, now bake. 
