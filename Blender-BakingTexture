@@ -65,4 +65,5 @@ to create lighting objects select the Emission Material, change the Color, and s
       it where you want. We are going to use it later in Three.js.
 
 9- Exporting the model: to understand the issues better simply expor the whole scene: Make all the collections selectable but not the others 
-      collection (even the emissions collection), In Object Mode, select everything with A, Now export as glTF 2.0, 
+      collection (even the emissions collection), In Object Mode, select everything with A, Now export as glTF 2.0, check Transform > +Y Up, 
+      also we need UVs because we want to set baked textures and uncheck everything else that you no need it.
