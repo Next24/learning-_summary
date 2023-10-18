@@ -5,20 +5,24 @@ to create lighting objects select the Emission Material, change the Color, and s
   remove other lights and add an Area Light to have light control.
 
 
-1- Optimization: Removing hidden faces
-2- position check for Z-fighting 
+1- Optimization: Removing hidden faces          2- position check for Z-fighting 
+
 3- Fixing faces orientation
+
 4- Normalize scales: in object mode select all objects with A > press Ctrl+A to open the Apply menu 
   and choose Scale. You can't see a difference, but all of the object scales have been applied to their 
   geometries instead. This way, all our objects now have a scale of 1.
+
 5- create or open the UV Editor area > select the object > go to Edit Mode > A or Ctrl + L to select island
   Press U > Unwarp > go to Edge select > select the cutting edges > U > Mark Seam > Ctrl + L > U > Unwarp 
   you can set the Margin for object parts with the Unwrap menu (bottom left corner)
+
 6- for small scenes with few small objects you can put all of the UVs on the same plane and bake them all together. 
   for this purpose, you need to arrange the UVd and make enough margin space, then open the "show overlay" by 
   clicking on the top right icon (to circles), and then the side arrow to show more options. In the menu that 
   should open, check Display Stretch and change it to Area. now change the scale of UVs (each object separately) to get
   close colors and put them all in the UV square area.
+
 7- Once you're happy with the result, you can deactivate the Display Stretch. now we can start to bake it:
    a) creating the texture: Leave the Edit Mode. On the top of the area, click on + New button > on New Image menu parameters>
       set name, W & H maximum 4096, for color Use a white tint, don't need alpha, Generated Type Use Blank, Tiled Unchecked.
@@ -29,6 +33,36 @@ to create lighting objects select the Emission Material, change the Color, and s
    c) Preparing the materials: select one object that you want to relate to the created texture file, change one of the viewports 
       to the "Shader Editor", If you can't see two nodes make sure "Use Nodes" on the top part of the area is checked, press 
       SHIFT + A while hovering Shader Editor area, navigate to Texture > Image Texture, Click on the drop-down image icon 
-      and choose our baked texture, in the Properties area go to "Render Properties" tab then in the "Bake section", for Bake Type
-      select "Combined", for margin if the result wasn't over lapping stay at 16, uncheck "Clear Image" if you bake step by step,
+      and choose our baked texture, in the Properties area go to the "Render Properties" tab then in the "Bake section", for Bake Type
+      select "Combined", for the margin if the result wasn't overlapping stay at 16, uncheck "Clear Image" if you bake step by step,
       Before bake, choose a Sampling quality 256 because we will fix the visual noise later, now bake. 
+   d) Baking the other objects: We can now repeat the process for the other objects.
+
+8- Exporting the image: As you can see, the colors are all burned out. If you compare to the render, the colors will have less contrast 
+   and ugly. we will fix all the issues. 
+   a) The color issue: When you do a render in Blender, a color manager named Filmic is used. You can find it at the bottom of the 
+      "Render Properties" tab in the "Color Management" section, If you want to test a render without Filmic, change the 
+      View Transform to Standard and do a render with F12. As you can see, we have the same ugly colors with high contrast. This tells 
+      us that, when baking in Blender, we are losing Filmic.
+   b) The noise issue: When you do a render, if you checked the denoise parameter, you can see a smooth render without noise. When baking, 
+      the noise is back. As with Filmic, Blender seems to ignore the denoise parameter
+   c) The image type issue: we want to export a compressed image that we can use in Three.js. We want it light and because we don't need 
+      transparency, we can use JPEG. Also, we want to apply the sRGB encoding to improve the color quality. But currently, all we have is 
+      our fancy HDR image.
+   d) The solution: Change one of the current areas (or create a new one) and choose Compositor The compositor uses nodes and, by default, 
+      your should have a Render Layers node and a Composite node. To tell Blender to use those nodes when rendering, make sure to check 
+      the "Use Nodes" on top of the Compositor area. Start by creating an Image node with SHIFT + A> Input > Image, then Change the image 
+      to our baked, using the dropdown menu, Normally, you should see your texture in the node preview but this feature sometimes has 
+      bugs, Save everything and reopen it if you want to see the preview, Now create a Denoise node to the right of the Image node (Shift+A >
+      Filter > Denoise), Link the Image output of the Image node to the Image input of the Denoise node, Link this Denoise output to the 
+      Composite input, But where is Filmic? you might ask. Filmic will automatically be applied as long as you have set it in the parameters 
+      of the render, Doing the compositing is like doing a render But we don't want to render the scene we want to render our image through 
+      the nodes we created. To deactivate the default render of the scene, select the Render Layers and press M to "mute" it. It should 
+      appear gray. We also need to change the resolution of the render so it matches the texture resolution. Go into the 
+      "Output Properties" tab and change the resolution to 4096x4096(your res), Finally, render with F12, This operation shouldn't take 
+      too long and you should see a beautiful render with the right colors & no noise on it. With the render window open and while hovering 
+      it, press ALT + S to save it, Change the File Format to "JPEG" lower the quality a little (75% is enough) and name it correctly. Save 
+      it where you want. We are going to use it later in Three.js.
+
+9- Exporting the model: to understand the issues better simply expor the whole scene: Make all the collections selectable but not the others 
+      collection (even the emissions collection), In Object Mode, select everything with A, Now export as glTF 2.0, 
