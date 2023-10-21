@@ -3,21 +3,28 @@ We’ve been using React and React Three Fiber, but we haven’t really discusse
 StrictMode:
     you should add to all your React projects. The StrictMode will warn you about potential problems in your application.
     In /src/index.jsx, import StrictMode from react
+
     import { StrictMode } from 'react'
+
     Wrap the <Canvas> in a <StrictMode>: 
+
       <StrictMode>
           <Canvas>
               <Experience />
           </Canvas>
       </StrictMode>
+
     And that’s all. Potential errors will now be shown as a warning in the terminal and in the console.
 
-Debug UI with Leva:
+Debug UI with Leva: > https://github.com/pmndrs/leva/tree/main 
     install leva with "npm install leva" Adding it to our project is as simple as adding a hook.
     In "Experience.jsx" Import useControls from leva:
+
       import { button, useControls } from 'leva'
+
     We did it in the Experience but we could have done it in any other component and even in multiple ones at a time.
     In the Experience, call useControls as follows:
+
       export default function Experience()
       {
           const { position, color, visible, Interval, ...... } = useControls('sphere', {
@@ -36,3 +43,24 @@ Debug UI with Leva:
           <mesh position={ [ position.x, position.y, 0 ] }  visible={ visible }>
           <meshStandardMaterial color={ color } />
       }
+    To finish, we can configure Leva. First, we need to add the component ourselves to our application so that we can 
+    tweak its attributes. We can’t add it in the Experience because it is inside <Canvas> and everything in <Canvas> 
+    is intended for R3F. Instead, we need to add it in the index.jsx file outside of the <Canvas>
+
+        <StrictMode> <Leva collapsed /> <Canvas> <Experience /> </Canvas> </StrictMode>
+
+Monitoring with r3f-perf: > https://github.com/utsuboco/r3f-perf
+    When it comes to monitoring, we can still use a traditional solution like Stats.js, but Renaud Rohlinger (@onirenaud) 
+    has developed a more advanced solution specifically made for R3F, called R3F-Perf.
+    In your terminal, add the r3f-perf dependency with "npm install r3f-perf" & In "Experience.jsx" import it from r3f-perf
+
+        import { Perf } from 'r3f-perf'
+
+    And add it to your JSX:
+        export default function Experience()
+        {
+            return <>
+                <Perf position="top-left" />
+                {/* ... */}
+            </>
+        }
