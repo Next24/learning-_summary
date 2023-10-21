@@ -1,0 +1,14 @@
+Creating a Three.js scene is already super simple with R3F, but it’s going to get even simpler with DREI
+let's add orbit control (or other controls):
+
+    import { OrbitControls } from '@react-three/drei'
+
+    in return add this > 
+        <OrbitControls />
+
+it's done, very easy. right? for control over more options for example: 
+    <OrbitControls enableDamping={ false } />  turn off the Damping for no smooth animations. 
+    all drei helpers list: https://github.com/pmndrs/drei#index
+
+
+
