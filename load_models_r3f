@@ -1,0 +1,242 @@
+for standard gltf files:
+
+  import { useLoader } from '@react-three/fiber'
+
+To use it, we need to send it the Three.js loader class we want to use and the path to the file.
+Because it’s a GLTF, we need to import GLTFLoader from three:
+
+  import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+
+we can now call useLoader:
+
+  export default function Experience()
+  {
+      const model = useLoader(GLTFLoader, './hamburger.glb')
+      console.log(model)
+  
+      // ...
+  }
+you should see an object containing our model in the console. To display it in our scene, we need to add 
+model.scene somewhere in the JSX. Unfortunately, we can’t just write it like this: { model.scene } Or 
+like this: <model.scene />. These commands are not supported by R3F and they don’t really make sense. 
+What we need is <primitive>. it's some kind of holder for whatever we want to put in it. It’s not a real 
+object that we will be able to see in the scene, but it’s a container supported by R3F that will handle 
+and display whatever we put in its "object" attribute. Add a <primitive> with the model.scene as the 
+object attribute:
+
+  export default function Experience()
+  {
+      const model = useLoader(GLTFLoader, './hamburger.glb')
+      return <>
+          <primitive object={ model.scene } scale={ 0.35 } />
+      </>
+  }
+
+DRACO compressed model:
+As we discussed in previous lessons, we need to instantiate a DRACOLoader class and add it to 
+the GLTFLoader instance with setDRACOLoader(). we can associate a DRACOLoader instance, but first, 
+we need to import it from three:
+
+  import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+
+We can then instantiate it in the function & associate it with the GLTFLoader instance using 
+setDRACOLoader():
+  
+  const model = useLoader(
+      GLTFLoader,
+      './hamburger-draco.glb',
+      (loader) =>
+      {
+          const dracoLoader = new DRACOLoader()
+          dracoLoader.setDecoderPath('./draco/')
+          loader.setDRACOLoader(dracoLoader)
+      }
+  )
+
+Lazy loading:
+To implement a lazy loading, we can use the <Suspense> tag. <Suspense> is a React component 
+that will wait for the process to be done (loading the model in our case) before rendering 
+the component. Unfortunately, we have only one component in our application and it’s Experience.
+Waiting for the model to load before rendering Experience would produce the same result. We need 
+to put our model in a separated component. Create a /src/Model.jsx file and export a Model 
+function by default:
+
+   export default function Model()
+  {
+      return null
+  }
+
+In Experience.jsx, import Model:  "  import Model from './Model.jsx'  "
+
+Add <Model> to the JSX near the <primitive>:  "  <Model />  "
+
+Now, we need to move the code related to the model from the Experience to the Model. Move the 
+"useLoader", "GLTFLoader" and "DRACOLoader" imports. Move "useLoader()" Now move the <primitive>.
+create another component (Placeholder.jsx) & import it in "Experience.jsx" and use it as placeholder
+We can finally add the <Suspense>. In  import Suspense from react and Wrap 
+the <Model>:
+
+  import { Suspense } from 'react'
+  import Placeholder from './Placeholder.jsx'
+
+  <Suspense fallback={<Placeholder/>}> <Model/> </Suspense>
+
+let the developer set attributes on the <Placeholder> and forward them to the <mesh>. In Placeholder, 
+retrieve the props parameter and apply them all to the <mesh> with the spread operator (...):
+  { return <mesh { ...props } > </mesh> }
+And now, we can set attributes on the <Placeholder> if needed: 
+  fallback={ <Placeholder position-y={ 0.5 } scale={ [ 2, 3, 2 ] } /> }
+And the cool part is that we can use our Placeholder anywhere we want: 
+
+  export default function Placeholder(props)
+  {
+      return <mesh { ...props }>
+          <boxGeometry args={ [ 1, 1, 1, 2, 2, 2 ] } />
+          <meshBasicMaterial wireframe color="red" />
+      </mesh>
+  }
+
+**GLTF loading with drei:**
+
+It wasn’t that complicated, and yet, we had to do some twists and apply a bunch of techniques. But 
+as always, there is an easier way thanks to drei. Drei implements multiple loader helpers like useGLTF 
+and useFBX. In Model.jsx, import useGLTF from @react-three/drei:
+
+  import { useGLTF } from '@react-three/drei'
+
+Now replace the whole useLoader() call by useGLTF() with the path to the file as the only parameter:
+
+  export default function Model()
+  {
+      const model = useGLTF('./hamburger.glb')
+  }
+
+And that’s it, we can remove the import of useLoader, GLTFLoader, and DRACOLoader. You might wonder how can 
+we handle the DRACO compressed version. Easy, you don’t. useGLTF will take care of everything for us and we 
+don’t even have to provide the DRACO decoder in the /public/ folder. 
+
+**Preloading**
+Currently, our model will start loading only when the component is instantiated. In our case, we’ve added 
+the model directly to the Experience without any condition, so the model will start loading straight away. 
+But if we had some conditions, such as the player who needs to enter the castle in order to instantiate 
+the throne room or any interior decoration, then it would take a moment to load the throne and the user would 
+see nothing but the placeholder for a moment (provided that we have a placeholder). Maybe we are fine with 
+that, but maybe we want to load the model as soon as possible to make sure it’s ready when the player arrives 
+in the castle. And we can do exactly that with the preload method on useGLTF. This might sound a bit weird, 
+but even if useGLTF is a function, it can have properties and methods (welcome to JavaScript). In the 
+Model.jsx file, after the Model function, call the preload with the model URL:
+
+  export default function Hamburger({ ...props })
+  {
+      // ...
+  }
+  useGLTF.preload('./hamburger-draco.glb')
+
+And that’s all. Even if it’s not relevant to our case, the hamburger will start loading immediately even if 
+we don’t add <Model> in our JSX. It’s important to use the exact same file path. If we are pre-loading the 
+non-draco model and then start loading the draco model when the component is added, we loaded one for nothing 
+and we will still have to wait for the second one to be loaded.
+
+**Multiple instances**
+what if we want a second hamburger? Or three? Or a hundred? Drei makes that possible with the Clone helper. 
+In Model.jsx, import Clone from @react-three/drei, Replace <primitive> by <Clone> with the same attributes.
+We get the same result, but now we can create other clones very easily:
+
+  import { Clone, useGLTF } from '@react-three/drei'
+  
+  export default function Model()
+  {   
+      return <>
+          <Clone object={ model.scene } scale={ 0.35 } position-x={ - 4 } />
+          <Clone object={ model.scene } scale={ 0.35 } position-x={ 0 } />
+          <Clone object={ model.scene } scale={ 0.35 } position-x={ 4 } />
+      </>
+  }
+
+**GLTF to component**
+If we want to manipulate the different parts of a model, we need to traverse the loaded model, search for 
+the right child, save it in some ways and apply whatever we need to it, or open it in a 3D software, change it
+and export it again. None of those solutions are convenient. That’s what GLTF -> React Three Fiber does.
+There is a command-line tool available here https://github.com/pmndrs/gltfjsx
+And an online version available here https://gltf.pmnd.rs/
+Let’s use the online version. Drag and drop the model file (draco or not) into, and it’ll convert your model 
+into a component. You can use the Debug UI to change some settings. Let’s keep the default setting. In /src/, 
+create a ModelName.jsx file and paste the code that GLTF -> React Three Fiber generated. You can use the 
+buttons on the Debug UI to copy, but you can also download the file as a .zip, This file will contain a 
+minimalist React project with everything you need in it. 
+
+  export default function ModelName(props) {
+    const { nodes, materials } = useGLTF("./model.glb")
+    return (
+      <group {...props} dispose={null}>
+        {/* ... */}
+        <mesh
+          castShadow
+          receiveShadow
+          geometry={nodes.name.geometry}
+          material={materials.MaterialName}
+          position={[0, 3.77, 0]}
+        />
+      </group>
+    )
+  }
+
+Our component is ready. so import it:
+
+  import ModelName from './ModelName.jsx'
+  
+  export default function Experience()
+  {
+      return <>
+          {/* ... */}
+          <Suspense fallback={ <Placeholder position-y={ 0.5 } scale={ [ 2, 3, 2 ] } /> }>
+              <Hamburger scale={ 0.35 } />
+          </Suspense>
+      </>
+  }
+
+**Fixing the shadow**
+As discussed in previous lessons, this is called shadow acne and it’s due to the model casting shadows on 
+itself. We can fix this issue by tweaking the "bias" or "shadowBias" on the directional light shadow in 
+Experience.jsx: 
+
+  <directionalLight castShadow position={ [ 1, 2, 3 ] } intensity={ 1.5 } shadow-normalBias={ 0.04 } />
+
+**Animation**
+You probably guess it, but there is a drei helper named useAnimations for that. Import "useAnimations" 
+from @react-three/drei in your model compoent(.jsx) We have access to animations provided with the model 
+and each one has been converted into an AnimationAction using the name of the animation, and those actions 
+are available in the animation.actions object. But before starting any of those actions, it’s better to 
+do it once the component as finished rendering for the first time and we can do that using useEffect. If you 
+want the fox(models) to start walking(first animation) after a few seconds, you can use the various methods 
+available in AnimationAction like c"rossFadeFrom" which is going to "fadeOut" the Run and "fadeIn" the 
+Walk(secound animation):
+
+  import { useAnimations, useGLTF } from '@react-three/drei'
+  import { useEffect } from 'react'
+  
+  export default function ModelName()
+  {
+      const model = useGLTF('./Model.gltf')
+      const animations = useAnimations(model.animations, model.scene)
+  
+      useEffect(() =>
+      {
+          const action = animations.actions[animationName]
+          action.play()
+      }, [])
+      
+      or you can use crossFade:
+  
+      useEffect(() =>
+      {
+          animations.actions.Run.play()
+          window.setTimeout(() =>
+          {
+              animations.actions.Walk.play()
+              animations.actions.Walk.crossFadeFrom(animations.actions.Run, 1)
+          }, 2000)
+      }, [])
+  }
+
+**Matcap Material**
