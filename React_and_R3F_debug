@@ -1,0 +1,38 @@
+We’ve been using React and React Three Fiber, but we haven’t really discussed monitoring and debugging. 
+
+StrictMode:
+    you should add to all your React projects. The StrictMode will warn you about potential problems in your application.
+    In /src/index.jsx, import StrictMode from react
+    import { StrictMode } from 'react'
+    Wrap the <Canvas> in a <StrictMode>: 
+      <StrictMode>
+          <Canvas>
+              <Experience />
+          </Canvas>
+      </StrictMode>
+    And that’s all. Potential errors will now be shown as a warning in the terminal and in the console.
+
+Debug UI with Leva:
+    install leva with "npm install leva" Adding it to our project is as simple as adding a hook.
+    In "Experience.jsx" Import useControls from leva:
+      import { button, useControls } from 'leva'
+    We did it in the Experience but we could have done it in any other component and even in multiple ones at a time.
+    In the Experience, call useControls as follows:
+      export default function Experience()
+      {
+          const { position, color, visible, Interval, ...... } = useControls('sphere', {
+            position:
+            {
+                value: { x: - 2, y: 0 },
+                step: 0.01,
+                joystick: 'invertY'
+            },
+            color: '#ff0000',
+            visible: true,
+            clickMe: button(() => { console.log('ok') }),
+            choice: { options: [ 'a', 'b', 'c' ] }
+          })
+          // ...
+          <mesh position={ [ position.x, position.y, 0 ] }  visible={ visible }>
+          <meshStandardMaterial color={ color } />
+      }
